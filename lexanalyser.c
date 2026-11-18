@@ -6,6 +6,7 @@ int main()
 {
     int i, j, k, id = 0, digit = 0, operator = 0;
     int keyword = 0, special = 0, flag;
+
     char e[50], buffer[50];
 
     char keywords[32][10] = {
@@ -17,74 +18,86 @@ int main()
         "volatile","while"
     };
 
-    printf("Enter an equation: ");
-    fgets(e, sizeof(e), stdin);
+    FILE *fp;
 
-    for(i = 0; e[i] != '\0'; i++)
+    fp = fopen("input.txt", "r");
+
+    if(fp == NULL)
     {
-        char ch = e[i];
+        printf("File cannot be opened");
+        return 1;
+    }
 
-        if(isalpha((unsigned char)ch) || ch == '_')
+    while(fgets(e, sizeof(e), fp) != NULL)
+    {
+        for(i = 0; e[i] != '\0'; i++)
         {
-            j = 0;
+            char ch = e[i];
 
-            while(isalnum((unsigned char)e[i]) || e[i] == '_')
+            if(isalpha((unsigned char)ch) || ch == '_')
             {
-                buffer[j++] = e[i++];
-            }
+                j = 0;
 
-            buffer[j] = '\0';
-            i--;
-
-            flag = 0;
-
-            for(k = 0; k < 32; k++)
-            {
-                if(strcmp(buffer, keywords[k]) == 0)
+                while(isalnum((unsigned char)e[i]) || e[i] == '_')
                 {
-                    flag = 1;
-                    break;
+                    buffer[j++] = e[i++];
+                }
+
+                buffer[j] = '\0';
+                i--;
+
+                flag = 0;
+
+                for(k = 0; k < 32; k++)
+                {
+                    if(strcmp(buffer, keywords[k]) == 0)
+                    {
+                        flag = 1;
+                        break;
+                    }
+                }
+
+                if(flag == 1)
+                {
+                    printf("%s is a keyword\n", buffer);
+                    keyword++;
+                }
+                else
+                {
+                    printf("%s is an identifier\n", buffer);
+                    id++;
                 }
             }
 
-            if(flag == 1)
+            else if(isdigit((unsigned char)ch))
             {
-                printf("%s is a keyword\n", buffer);
-                keyword++;
+                printf("%c is a digit\n", ch);
+                digit++;
             }
-            else
+
+            else if(ch == '+' || ch == '-' || ch == '*' ||
+                    ch == '/' || ch == '^')
             {
-                printf("%s is an identifier\n", buffer);
-                id++;
+                printf("%c is an operator\n", ch);
+                operator++;
             }
-        }
 
-        else if(isdigit((unsigned char)ch))
-        {
-            printf("%c is a digit\n", ch);
-            digit++;
-        }
+            else if(ch == ';' || ch == ',' || ch == '(' ||
+                    ch == ')' || ch == '{' || ch == '}' ||
+                    ch == '[' || ch == ']')
+            {
+                printf("%c is a special symbol\n", ch);
+                special++;
+            }
 
-        else if(ch == '+' || ch == '-' || ch == '*' ||
-                ch == '/' || ch == '^')
-        {
-            printf("%c is an operator\n", ch);
-            operator++;
-        }
-
-        else if(ch == ';' || ch == ',' || ch == '(' ||
-                ch == ')' || ch == '{' || ch == '}' ||
-                ch == '[' || ch == ']')
-        {
-            printf("%c is a special symbol\n", ch);
-            special++;
-        }
-
-        else if(!isspace((unsigned char)ch))
-        {
-            printf("Invalid character: %c\n", ch);
+            else if(!isspace((unsigned char)ch))
+            {
+                printf("Invalid character: %c\n", ch);
+            }
         }
     }
+
+    fclose(fp);
 
     printf("\nTotal identifiers: %d\n", id);
     printf("Total digits: %d\n", digit);

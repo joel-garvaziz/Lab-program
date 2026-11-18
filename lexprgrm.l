@@ -35,8 +35,18 @@ int|float|char|double|void|return|if|else|for|while {
 
 int main()
 {
-    printf("Enter a program:\n");
+    yyin = fopen("input.txt", "r");
+
+    if (yyin == NULL)
+    {
+        printf("File not found");
+        return 1;
+    }
+
     yylex();
+
+    fclose(yyin);
+
     return 0;
 }
 
